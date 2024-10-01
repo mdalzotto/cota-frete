@@ -1,0 +1,140 @@
+openapi: 3.0.0
+info:
+  title: API de Cotações de Frete
+  description: API para gerenciamento de cotações de frete.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /metrics:
+    get:
+      summary: Retorna as métricas das cotações de frete.
+      parameters:
+        - name: last_quotes
+          in: query
+          description: Quantidade de cotações retornadas, ordenadas por ordem decrescente.
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Sucesso ao retornar as métricas das cotações.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_carriers:
+                    type: integer
+                  cheapest_shipping_price:
+                    type: number
+                    format: float
+                  shipping_most_expensive:
+                    type: number
+                    format: float
+                  metrics_by_carrier:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        carrier_name:
+                          type: string
+                        total_results:
+                          type: integer
+                        total_shipping_price:
+                          type: number
+                          format: float
+                        average_price_shipping:
+                          type: number
+                          format: float
+        '400':
+          description: Requisição inválida.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "mensagem de erro"
+
+  /quote:
+    post:
+      summary: Cria uma cotação de frete.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recipient:
+                  type: object
+                  properties:
+                    address:
+                      type: object
+                      properties:
+                        zipcode:
+                          type: string
+                          example: "01311000"
+                volumes:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      category:
+                        type: integer
+                      amount:
+                        type: integer
+                      unitary_weight:
+                        type: number
+                        format: float
+                      price:
+                        type: number
+                        format: float
+                      sku:
+                        type: string
+                      height:
+                        type: number
+                        format: float
+                      width:
+                        type: number
+                        format: float
+                      length:
+                        type: number
+                        format: float
+      responses:
+        '201':
+          description: Cotação criada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  carrier:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        service:
+                          type: string
+                        deadline:
+                          type: integer
+                        price:
+                          type: number
+                          format: float
+        '400':
+          description: Requisição inválida.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "mensagem de erro"
+        '500':
+          description: Erro interno do servidor.

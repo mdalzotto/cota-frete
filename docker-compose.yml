@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "${MONGO_PORT}:27017"
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+    volumes:
+      - mongo-data:/data/db
+
+  app:
+    build: .
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    environment:
+      - API_PORT=${API_PORT}
+      - MONGO_HOST=${MONGO_HOST}
+      - MONGO_PORT=${MONGO_PORT}
+      - MONGO_DATABASE=${MONGO_DATABASE}
+      - API_PATH=${API_PATH}
+      - API_TOKEN=${API_TOKEN}
+      - API_PLATFORM_CODE=${API_PLATFORM_CODE}
+      - API_REGISTERED_NUMBER=${API_REGISTERED_NUMBER}
+      - API_DISPATCHER_ZIPCODE=${API_DISPATCHER_ZIPCODE}
+    depends_on:
+      - mongodb
+
+volumes:
+  mongo-data:
